@@ -1,6 +1,6 @@
 {
   "name": "kira-server-firebase",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:aabccd021/kira-server-firebase.git",
@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc",
     "coverage": "yarn test --coverage",
-    "lint": "eslint ./ --ext ts",
+    "lint": "eslint ./src --ext ts",
     "functions:install": "cd functions && yarn install",
     "functions:update-dep": "yarn build && rm -rf functions/node_modules/kira-server-firebase && cp -r lib functions/node_modules/kira-server-firebase",
     "test": "yarn test:functions",
@@ -54,9 +54,6 @@
     "testEnvironment": "node"
   },
   "eslintConfig": {
-    "ignorePatterns": [
-      "**/*.js"
-    ],
     "parser": "@typescript-eslint/parser",
     "plugins": [
       "@typescript-eslint",

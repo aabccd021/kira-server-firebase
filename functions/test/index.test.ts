@@ -58,12 +58,12 @@ describe('Functions', () => {
     expect(user1_0).toEqual(
       expect.objectContaining({
         displayName: 'user1',
+        memeImageCreatedCount: 0,
+        memeCreatedCount: 0,
         profilePicture: {
           url:
             'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
         },
-        memeImageCreatedCount: 0,
-        memeCreatedCount: 0,
       })
     );
     const user1JoinedTime = user1_0?.['joinedTime'] as firestore.Timestamp;
@@ -85,8 +85,15 @@ describe('Functions', () => {
     expect(image1_0).toEqual(
       expect.objectContaining({
         image: { url: 'https://i.ytimg.com/vi/abuAVZ6LpzM/hqdefault.jpg' },
-        owner: { id: 'user1' },
         memeCreatedCount: 0,
+        owner: {
+          id: 'user1',
+          displayName: 'user1',
+          profilePicture: {
+            url:
+              'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
+          },
+        },
       })
     );
     const image1CreationTime = image1_0?.['creationTime'] as firestore.Timestamp;
@@ -99,12 +106,12 @@ describe('Functions', () => {
     expect(user1_1).toEqual(
       expect.objectContaining({
         displayName: 'user1',
+        memeImageCreatedCount: 1,
+        memeCreatedCount: 0,
         profilePicture: {
           url:
             'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
         },
-        memeImageCreatedCount: 1,
-        memeCreatedCount: 0,
       })
     );
     expect((user1_1?.['joinedTime'] as firestore.Timestamp).isEqual(user1JoinedTime)).toBe(true);
@@ -123,9 +130,19 @@ describe('Functions', () => {
     const meme1 = (await db.doc('meme/meme1').get()).data();
     expect(meme1).toEqual(
       expect.objectContaining({
-        memeImage: { id: 'image1' },
         text: 'L eats banana',
-        owner: { id: 'user1' },
+        owner: {
+          id: 'user1',
+          displayName: 'user1',
+          profilePicture: {
+            url:
+              'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
+          },
+        },
+        memeImage: {
+          id: 'image1',
+          image: { url: 'https://i.ytimg.com/vi/abuAVZ6LpzM/hqdefault.jpg' },
+        },
       })
     );
     const timeSinceCreatedMeme1 =
@@ -138,8 +155,15 @@ describe('Functions', () => {
     expect(image1_1).toEqual(
       expect.objectContaining({
         image: { url: 'https://i.ytimg.com/vi/abuAVZ6LpzM/hqdefault.jpg' },
-        owner: { id: 'user1' },
         memeCreatedCount: 1,
+        owner: {
+          id: 'user1',
+          displayName: 'user1',
+          profilePicture: {
+            url:
+              'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
+          },
+        },
       })
     );
     expect((image1_1?.['creationTime'] as firestore.Timestamp).isEqual(image1CreationTime)).toBe(
@@ -151,12 +175,12 @@ describe('Functions', () => {
     expect(user1_2).toEqual(
       expect.objectContaining({
         displayName: 'user1',
+        memeImageCreatedCount: 1,
+        memeCreatedCount: 1,
         profilePicture: {
           url:
             'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
         },
-        memeImageCreatedCount: 1,
-        memeCreatedCount: 1,
       })
     );
     expect((user1_2?.['joinedTime'] as firestore.Timestamp).isEqual(user1JoinedTime)).toBe(true);

@@ -1,30 +1,29 @@
 import assertNever from 'assert-never';
 import { firestore } from 'firebase-admin';
 import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
-import { Dictionary, isString } from 'lodash';
+import { isString } from 'lodash';
 
-import { Field } from './schema';
-import { Action } from './type';
+import { FieldToAction } from './types';
 
-export function fieldToActionOnDelete(
-  collectionName: string,
-  field: Field,
-  fieldName: string
-): Dictionary<Action<QueryDocumentSnapshot>> | undefined {
+export const fieldToActionOnDelete: FieldToAction<QueryDocumentSnapshot> = ({
+  field,
+  fieldName,
+  colName,
+}) => {
   if (field.type === 'count') {
-    const { countedCollection, groupByReference } = field;
+    const { countedCol, groupByRef } = field;
     return {
-      [countedCollection]: async ({ snapshot: document }) => {
+      [countedCol]: async ({ snapshot: document }) => {
         const data = document.data();
-        const counterDocumentId = data[groupByReference]?.id;
+        const counterDocumentId = data[groupByRef]?.id;
         if (!isString(counterDocumentId)) {
           throw Error(
             `counterDocumentId is not string: ` +
-              `${JSON.stringify(data)}[${groupByReference}]:${counterDocumentId}`
+              `${JSON.stringify(data)}[${groupByRef}]:${counterDocumentId}`
           );
         }
         return {
-          [collectionName]: {
+          [colName]: {
             [counterDocumentId]: {
               [fieldName]: firestore.FieldValue.increment(-1),
             },
@@ -34,9 +33,9 @@ export function fieldToActionOnDelete(
     };
   }
   if (field.type === 'owner') return undefined;
-  if (field.type === 'creationTimestamp') return undefined;
+  if (field.type === 'creationTime') return undefined;
   if (field.type === 'image') return undefined;
-  if (field.type === 'reference') return undefined;
+  if (field.type === 'ref') return undefined;
   if (field.type === 'string') return undefined;
   assertNever(field);
-}
+};
