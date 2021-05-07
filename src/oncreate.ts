@@ -12,7 +12,7 @@ export const fieldToActionOnCreate: FieldToAction<QueryDocumentSnapshot> = ({
   userCol,
 }) => {
   if (field.type === 'count') {
-    const { countedCollection, groupByReference } = field;
+    const { countedCol, groupByRef } = field;
     return {
       [colName]: async ({ snapshot: document }) => ({
         [colName]: {
@@ -21,13 +21,13 @@ export const fieldToActionOnCreate: FieldToAction<QueryDocumentSnapshot> = ({
           },
         },
       }),
-      [countedCollection]: async ({ snapshot: document }) => {
+      [countedCol]: async ({ snapshot: document }) => {
         const data = document.data();
-        const counterDocumentId = data[groupByReference]?.['id'];
+        const counterDocumentId = data[groupByRef]?.['id'];
         if (!isString(counterDocumentId)) {
           throw Error(
             `counterDocumentId is not string: ` +
-              `${JSON.stringify(data)}[${groupByReference}]:${counterDocumentId}`
+              `${JSON.stringify(data)}[${groupByRef}]:${counterDocumentId}`
           );
         }
         return {
@@ -65,7 +65,7 @@ export const fieldToActionOnCreate: FieldToAction<QueryDocumentSnapshot> = ({
           );
         }
         const docData = await keyToDocument({
-          collection: userCol,
+          col: userCol,
           id: ownerId,
         }).then((snapshot) => snapshot.data());
         return {
@@ -78,7 +78,31 @@ export const fieldToActionOnCreate: FieldToAction<QueryDocumentSnapshot> = ({
       },
     };
   }
-  if (field.type === 'ref') return undefined;
+  if (field.type === 'ref') {
+    const { syncFields, refCol } = field;
+    return {
+      [colName]: async ({ keyToDocument, snapshot: document }) => {
+        const data = document.data();
+        const refId = data?.[fieldName]?.['id'];
+        if (!isString(refId)) {
+          throw Error(
+            `owner is not string: ${JSON.stringify(data)}[${fieldName}]${data?.[fieldName]}`
+          );
+        }
+        const docData = await keyToDocument({
+          col: refCol,
+          id: refId,
+        }).then((snapshot) => snapshot.data());
+        return {
+          [colName]: {
+            [document.id]: {
+              [fieldName]: pick(docData, keys(syncFields)) as Dictionary<DocumentField>,
+            },
+          },
+        };
+      },
+    };
+  }
   if (field.type === 'string') return undefined;
   assertNever(field);
 };

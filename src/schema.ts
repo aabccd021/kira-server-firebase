@@ -6,8 +6,8 @@ export type StringField = {
 
 export type CountField = {
   type: 'count';
-  countedCollection: string;
-  groupByReference: string;
+  countedCol: string;
+  groupByRef: string;
 };
 
 export type ImageField = {
@@ -25,7 +25,7 @@ export type OwnerField = {
 
 export type ReferenceField = {
   type: 'ref';
-  referencedCollection: string;
+  refCol: string;
   syncFields?: Dictionary<true>;
 };
 

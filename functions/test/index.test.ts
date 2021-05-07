@@ -130,7 +130,6 @@ describe('Functions', () => {
     const meme1 = (await db.doc('meme/meme1').get()).data();
     expect(meme1).toEqual(
       expect.objectContaining({
-        memeImage: { id: 'image1' },
         text: 'L eats banana',
         owner: {
           id: 'user1',
@@ -139,6 +138,10 @@ describe('Functions', () => {
             url:
               'https://sakurazaka46.com/images/14/eb2/a748ca8dac608af8edde85b62a5a8/1000_1000_102400.jpg',
           },
+        },
+        memeImage: {
+          id: 'image1',
+          image: { url: 'https://i.ytimg.com/vi/abuAVZ6LpzM/hqdefault.jpg' },
         },
       })
     );

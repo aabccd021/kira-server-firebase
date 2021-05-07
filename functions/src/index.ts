@@ -12,13 +12,13 @@ export const kira = getTriggers({
         },
         memeImageCreatedCount: {
           type: 'count',
-          countedCollection: 'memeImage',
-          groupByReference: 'owner',
+          countedCol: 'memeImage',
+          groupByRef: 'owner',
         },
         memeCreatedCount: {
           type: 'count',
-          countedCollection: 'meme',
-          groupByReference: 'owner',
+          countedCol: 'meme',
+          groupByRef: 'owner',
         },
         profilePicture: {
           type: 'image',
@@ -36,8 +36,8 @@ export const kira = getTriggers({
         },
         memeCreatedCount: {
           type: 'count',
-          countedCollection: 'meme',
-          groupByReference: 'memeImage',
+          countedCol: 'meme',
+          groupByRef: 'memeImage',
         },
         owner: {
           type: 'owner',
@@ -50,7 +50,7 @@ export const kira = getTriggers({
       meme: {
         memeImage: {
           type: 'ref',
-          referencedCollection: 'memeImage',
+          refCol: 'memeImage',
           syncFields: {
             image: true,
           },

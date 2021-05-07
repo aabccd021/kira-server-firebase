@@ -11,15 +11,15 @@ export const fieldToActionOnDelete: FieldToAction<QueryDocumentSnapshot> = ({
   colName,
 }) => {
   if (field.type === 'count') {
-    const { countedCollection, groupByReference } = field;
+    const { countedCol, groupByRef } = field;
     return {
-      [countedCollection]: async ({ snapshot: document }) => {
+      [countedCol]: async ({ snapshot: document }) => {
         const data = document.data();
-        const counterDocumentId = data[groupByReference]?.id;
+        const counterDocumentId = data[groupByRef]?.id;
         if (!isString(counterDocumentId)) {
           throw Error(
             `counterDocumentId is not string: ` +
-              `${JSON.stringify(data)}[${groupByReference}]:${counterDocumentId}`
+              `${JSON.stringify(data)}[${groupByRef}]:${counterDocumentId}`
           );
         }
         return {

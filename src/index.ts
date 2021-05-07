@@ -57,7 +57,7 @@ async function handleTrigger<T extends Snapshot>({
           chain(updates)
             .reduce(merge)
             .flatMap((col, colName) =>
-              map(col, (doc, id) => writeDocument({ collection: colName, id }, doc))
+              map(col, (doc, id) => writeDocument({ col: colName, id }, doc))
             )
             .value()
         )
@@ -73,7 +73,7 @@ async function handleTrigger<T extends Snapshot>({
   );
 }
 
-function mapCollectionFieldsToActions<T extends Snapshot>(
+function mapColFieldToAction<T extends Snapshot>(
   schema: Schema,
   fieldToAction: FieldToAction<T>
 ): Dictionary<Action<T>[]> {
@@ -88,9 +88,9 @@ function mapCollectionFieldsToActions<T extends Snapshot>(
       (prev, actionDict) =>
         reduce(
           actionDict,
-          (prev, action, collectionName) => ({
+          (prev, action, colName) => ({
             ...prev,
-            [collectionName]: [...(prev[collectionName] ?? []), action],
+            [colName]: [...(prev[colName] ?? []), action],
           }),
           prev
         ),
@@ -110,20 +110,20 @@ export function getTriggers({
   onUpdate?: functions.CloudFunction<functions.Change<QueryDocumentSnapshot>>;
   onDelete?: functions.CloudFunction<QueryDocumentSnapshot>;
 }> {
-  const onCreateActions = mapCollectionFieldsToActions(schema, fieldToActionOnCreate);
-  const onUpdateActions = mapCollectionFieldsToActions(schema, fieldToActionOnUpdate);
-  const onDeleteActions = mapCollectionFieldsToActions(schema, fieldToActionOnDelete);
+  const onCreateActions = mapColFieldToAction(schema, fieldToActionOnCreate);
+  const onUpdateActions = mapColFieldToAction(schema, fieldToActionOnUpdate);
+  const onDeleteActions = mapColFieldToAction(schema, fieldToActionOnDelete);
   return mapValues(schema.cols, (_, colName) => {
     // TODO: add region
     const document = functions
       .region('asia-southeast2')
       .firestore.document(`${colName}/{documentId}`);
     const triggerContext: TriggerContext = {
-      keyToDocument: ({ collection, id }) => firestore.collection(collection).doc(id).get(),
-      writeDocument: ({ collection, id }, document) =>
-        firestore.collection(collection).doc(id).set(document, { merge: true }),
+      keyToDocument: ({ col, id }) => firestore.collection(col).doc(id).get(),
+      writeDocument: ({ col, id }, document) =>
+        firestore.collection(col).doc(id).set(document, { merge: true }),
       dbrQuery: (query) => {
-        const col = firestore.collection(query.collection);
+        const col = firestore.collection(query.col);
         const orderedQuery = query.orderByField
           ? col.orderBy(query.orderByField, query.orderDirection)
           : col;

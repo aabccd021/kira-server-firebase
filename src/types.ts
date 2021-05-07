@@ -5,7 +5,7 @@ import { Dictionary } from 'lodash';
 
 import { Field } from './schema';
 
-export type DocumentKey = { collection: string; id: string };
+export type DocumentKey = { col: string; id: string };
 
 export type TriggerContext = {
   keyToDocument: KeyToDocument;
@@ -43,7 +43,7 @@ export type FieldToAction<T extends Snapshot> = (args: {
 }) => Dictionary<Action<T>> | undefined;
 
 export type Query<T extends string = string> = {
-  collection: T;
+  col: T;
   limit?: number;
   orderByField?: string;
   orderDirection?: 'asc' | 'desc';
