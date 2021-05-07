@@ -9,6 +9,9 @@
   "engines": {
     "node": "12"
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "tsc",
     "coverage": "yarn test --coverage",
