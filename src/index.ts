@@ -17,8 +17,8 @@ import {
 import { fieldToActionOnCreate } from './oncreate';
 import { fieldToActionOnDelete } from './ondelete';
 import { fieldToActionOnUpdate } from './onupdate';
-import { Field } from './schema';
-import { Action, FieldToAction, Snapshot, TriggerContext } from './type';
+import { Schema } from './schema';
+import { Action, FieldToAction, Snapshot, TriggerContext } from './types';
 
 function handleTriggerWith<T extends Snapshot>(
   triggerContext: TriggerContext,
@@ -27,18 +27,17 @@ function handleTriggerWith<T extends Snapshot>(
   return (snapshot: T, eventContext: functions.EventContext) =>
     handleTrigger({ snapshot, eventContext, triggerContext, actions });
 }
-async function handleTrigger<T extends Snapshot>(context: {
+async function handleTrigger<T extends Snapshot>({
+  snapshot,
+  actions,
+  eventContext,
+  triggerContext: { keyToDocument, writeDocument, dbrQuery },
+}: {
   actions: Action<T>[];
-  triggerContext: TriggerContext;
   snapshot: T;
   eventContext: functions.EventContext;
+  triggerContext: TriggerContext;
 }): Promise<void> {
-  const {
-    eventContext,
-    snapshot,
-    actions,
-    triggerContext: { keyToDocument, writeDocument },
-  } = context;
   const memoizedKeyToDocument = memoize(keyToDocument);
   return (
     // execute actions
@@ -48,6 +47,7 @@ async function handleTrigger<T extends Snapshot>(context: {
           keyToDocument: memoizedKeyToDocument,
           snapshot,
           eventContext,
+          dbrQuery,
         })
       )
     )
@@ -74,12 +74,14 @@ async function handleTrigger<T extends Snapshot>(context: {
 }
 
 function mapCollectionFieldsToActions<T extends Snapshot>(
-  collections: Dictionary<Dictionary<Field>>,
+  schema: Schema,
   fieldToAction: FieldToAction<T>
 ): Dictionary<Action<T>[]> {
-  return chain(collections)
-    .flatMap((fieldDict, collectionName) =>
-      map(fieldDict, (field, fieldName) => fieldToAction(collectionName, field, fieldName))
+  return chain(schema.cols)
+    .flatMap((fieldDict, colName) =>
+      map(fieldDict, (field, fieldName) =>
+        fieldToAction({ userCol: schema.userCol, colName, field, fieldName })
+      )
     )
     .compact()
     .reduce<Dictionary<Action<T>[]>>(
@@ -97,19 +99,21 @@ function mapCollectionFieldsToActions<T extends Snapshot>(
     .value();
 }
 
-export function getTriggers(args: {
+export function getTriggers({
+  firestore,
+  schema,
+}: {
   firestore: admin.firestore.Firestore;
-  collections: Dictionary<Dictionary<Field>>;
+  schema: Schema;
 }): Dictionary<{
   onCreate?: functions.CloudFunction<QueryDocumentSnapshot>;
   onUpdate?: functions.CloudFunction<functions.Change<QueryDocumentSnapshot>>;
   onDelete?: functions.CloudFunction<QueryDocumentSnapshot>;
 }> {
-  const { firestore, collections } = args;
-  const onCreateActions = mapCollectionFieldsToActions(collections, fieldToActionOnCreate);
-  const onUpdateActions = mapCollectionFieldsToActions(collections, fieldToActionOnUpdate);
-  const onDeleteActions = mapCollectionFieldsToActions(collections, fieldToActionOnDelete);
-  return mapValues(collections, (_, colName) => {
+  const onCreateActions = mapCollectionFieldsToActions(schema, fieldToActionOnCreate);
+  const onUpdateActions = mapCollectionFieldsToActions(schema, fieldToActionOnUpdate);
+  const onDeleteActions = mapCollectionFieldsToActions(schema, fieldToActionOnDelete);
+  return mapValues(schema.cols, (_, colName) => {
     // TODO: add region
     const document = functions
       .region('asia-southeast2')
@@ -118,6 +122,14 @@ export function getTriggers(args: {
       keyToDocument: ({ collection, id }) => firestore.collection(collection).doc(id).get(),
       writeDocument: ({ collection, id }, document) =>
         firestore.collection(collection).doc(id).set(document, { merge: true }),
+      dbrQuery: (query) => {
+        const col = firestore.collection(query.collection);
+        const orderedQuery = query.orderByField
+          ? col.orderBy(query.orderByField, query.orderDirection)
+          : col;
+        const limitedQuery = query.limit ? orderedQuery.limit(query.limit) : orderedQuery;
+        return limitedQuery.get().then((snapshot) => map(snapshot.docs, ({ id }) => ({ id })));
+      },
     };
     const colOnCreateActions = onCreateActions?.[colName];
     const colOnUpdateActions = onUpdateActions?.[colName];

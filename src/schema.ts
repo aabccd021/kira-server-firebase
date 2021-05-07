@@ -15,7 +15,7 @@ export type ImageField = {
 };
 
 export type CreationTimestampField = {
-  type: 'creationTimestamp';
+  type: 'creationTime';
 };
 
 export type OwnerField = {
@@ -24,7 +24,7 @@ export type OwnerField = {
 };
 
 export type ReferenceField = {
-  type: 'reference';
+  type: 'ref';
   referencedCollection: string;
   syncFields?: Dictionary<true>;
 };

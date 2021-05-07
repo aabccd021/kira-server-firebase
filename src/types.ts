@@ -10,6 +10,7 @@ export type DocumentKey = { collection: string; id: string };
 export type TriggerContext = {
   keyToDocument: KeyToDocument;
   writeDocument: (key: DocumentKey, document: Document) => Promise<firestore.WriteResult>;
+  dbrQuery: DBRQuery;
 };
 
 export type KeyToDocument = (
@@ -18,7 +19,12 @@ export type KeyToDocument = (
 
 export type Update = Dictionary<Dictionary<Document>>;
 
-export type Document = Dictionary<number | string | FirebaseFirestore.FieldValue>;
+export type DocumentField =
+  | number
+  | string
+  | FirebaseFirestore.FieldValue
+  | Dictionary<DocumentField>;
+export type Document = Dictionary<DocumentField>;
 
 export type Snapshot = QueryDocumentSnapshot | Change<QueryDocumentSnapshot>;
 
@@ -29,11 +35,12 @@ export type Action<T extends Snapshot> = (params: {
   dbrQuery: DBRQuery;
 }) => Promise<Update>;
 
-export type FieldToAction<T extends Snapshot> = (
-  collectionName: string,
-  field: Field,
-  fieldName: string
-) => Dictionary<Action<T>> | undefined;
+export type FieldToAction<T extends Snapshot> = (args: {
+  userCol: string;
+  colName: string;
+  field: Field;
+  fieldName: string;
+}) => Dictionary<Action<T>> | undefined;
 
 export type Query<T extends string = string> = {
   collection: T;
