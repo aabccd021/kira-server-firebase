@@ -8,4 +8,5 @@ jobs:
         with:
           node-version: '12'
       - run: yarn functions:install
+      - run: yarn install
       - run: yarn test
