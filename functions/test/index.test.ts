@@ -14,14 +14,14 @@ describe('Functions', () => {
     expect(postCount0).toBe(0);
     expect(postCount0).not.toBe(1);
 
-    await db.collection('posts').add({ title: 'New Post' });
+    await db.collection('posts').add({ title: 'New Posta' });
     await sleep(1000);
 
     const posts = await db.collection('posts').get();
     const postCount1 = posts.docs.length;
     expect(postCount1).toBe(1);
     expect(postCount1).not.toBe(0);
-    expect(posts.docs[0].data()).toStrictEqual({ title: 'New Post' });
+    expect(posts.docs[0].data()).toStrictEqual({ title: 'New Posta' });
 
     await db.collection('posts').add({ title: 'New Post' });
     await sleep(1000);
