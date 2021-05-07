@@ -17,9 +17,10 @@
     "serve": "yarn build && firebase emulators:start --only functions",
     "shell": "yarn build && firebase functions:shell",
     "start": "yarn shell",
-    "update-functions-dep": "yarn build && rm -rf functions/node_modules/kira-server-firebase && cp -r lib functions/node_modules/kira-server-firebase",
-    "test": "yarn test:integration",
-    "test:integration": "yarn update-functions-dep && cd functions && yarn test"
+    "functions:install": "cd functions && yarn install",
+    "functions:update-dep": "yarn build && rm -rf functions/node_modules/kira-server-firebase && cp -r lib functions/node_modules/kira-server-firebase",
+    "test": "yarn test:functions",
+    "test:functions": "yarn functions:update-dep && cd functions && yarn test"
   },
   "dependencies": {
     "assert-never": "^1.2.1",
