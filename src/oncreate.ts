@@ -17,7 +17,7 @@ export function fieldToActionOnCreate(
       [colName]: async ({ snapshot: document }) => ({
         [colName]: {
           [document.id]: {
-            [fieldName]: 0,
+            [fieldName]: 1,
           },
         },
       }),
