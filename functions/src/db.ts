@@ -12,5 +12,5 @@ export function getApp(): admin.app.App {
 }
 
 export function clearDb(): Promise<void> {
-  return firebaseTesting.clearFirestoreData({ projectId: projectId });
+  return firebaseTesting.clearFirestoreData({ projectId });
 }
