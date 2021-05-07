@@ -1,6 +1,6 @@
 on: [push]
 jobs:
-  build:
+  test_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -10,7 +10,7 @@ jobs:
           key: ${{ runner.os }}-firebase-emulator-${{ hashFiles('./functions/yarn.lock') }}
       - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: "12"
       - run: yarn functions:install
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn test
