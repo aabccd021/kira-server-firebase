@@ -14,7 +14,7 @@ export type ImageField = {
   type: 'image';
 };
 
-export type CreationTimestampField = {
+export type CreationTimeField = {
   type: 'creationTime';
 };
 
@@ -31,7 +31,7 @@ export type ReferenceField = {
 
 export type Field =
   | CountField
-  | CreationTimestampField
+  | CreationTimeField
   | ImageField
   | OwnerField
   | ReferenceField
