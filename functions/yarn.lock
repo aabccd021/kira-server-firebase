@@ -5336,13 +5336,27 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-kira-server-firebase@./..:
-  version "0.1.1"
+kira-core@^0.3.8:
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/kira-core/-/kira-core-0.3.8.tgz#421140f62a2a1b9fb49a53c7a8f79340ed77c489"
+  integrity sha512-IQFvbit0enc98ZYvhacFZemj38V1UgehK8tKyhkcxE+1p16ehD6woz+mLw3kDPOQl0LP+BT+lIp4/7l0DAxw4A==
+
+kira-firebase@./..:
+  version "0.1.0"
   dependencies:
     assert-never "^1.2.1"
     firebase-admin "^9.6.0"
     firebase-functions "^3.13.2"
+    kira-nosql "^0.1.7"
     lodash "^4.17.21"
+
+kira-nosql@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/kira-nosql/-/kira-nosql-0.1.7.tgz#b35a0f00a50883e1b576035a34f3eacaf056135b"
+  integrity sha512-sdPlDh/hFUCVECFz6LXnAxFaBCKe2gDKKiUb1pfieVl6ciSUvX2F4I6GWgIpWdGDxkj9PtelPbLaWKf5xmqmRg==
+  dependencies:
+    assert-never "^1.2.1"
+    kira-core "^0.3.8"
 
 kleur@^3.0.3:
   version "3.0.3"

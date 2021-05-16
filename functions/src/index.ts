@@ -1,9 +1,10 @@
 import { getApp } from './db';
-import { getTriggers } from 'kira-server-firebase';
+import { getTriggers_1 as getTriggers } from 'kira-firebase/server';
 
 export const kira = getTriggers({
   firestore: getApp().firestore(),
   schema: {
+    version: '0.3.8',
     userCol: 'user',
     cols: {
       user: {

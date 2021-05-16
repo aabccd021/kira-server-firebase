@@ -8,8 +8,8 @@ import { Dictionary } from 'lodash';
 
 export type DocumentKey = { readonly col: string; readonly id: string };
 
-export type TriggerContext = {
-  readonly getDoc: GetDoc;
+export type TriggerContext<GDE> = {
+  readonly getDoc: GetDoc<GDE>;
 };
 
 export type Update = Dictionary<Dictionary<Document>>;
@@ -45,6 +45,16 @@ export type GetTriggers<S extends Schema> = (args: {
 
 export type FirestorePrimitiveField = number | string | firestore.Timestamp;
 
-export type FirestoreDocData = {
-  readonly [key: string]: FirestoreDocData | FirestorePrimitiveField;
+export type FirestoreReadDocData = {
+  readonly [key: string]:
+    | ({ readonly id: string } & FirestoreReadDocData)
+    | FirestorePrimitiveField;
+};
+
+export type FirestoreWriteDocData = {
+  readonly [key: string]:
+    | FirestoreWriteDocData
+    | FirestorePrimitiveField
+    | firestore.FieldValue
+    | Date;
 };
