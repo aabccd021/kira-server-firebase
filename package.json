@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc",
     "coverage": "yarn test --coverage",
-    "lint": "eslint ./src --ext ts",
+    "lint": "eslint . --ext ts",
     "functions:install": "cd functions && yarn install",
     "functions:update-dep": "yarn build && rm -rf functions/node_modules/kira-server-firebase && cp -r lib functions/node_modules/kira-server-firebase",
     "test": "yarn test:functions",
@@ -74,6 +74,10 @@
       "plugin:import/typescript",
       "plugin:prettier/recommended",
       "prettier"
+    ],
+    "ignorePatterns": [
+      "**/*.d.ts",
+      "/functions"
     ],
     "rules": {
       "@typescript-eslint/no-unused-vars": "off",
