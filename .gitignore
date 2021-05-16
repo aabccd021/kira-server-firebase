@@ -21,3 +21,10 @@ coverage/
 
 # log
 *.log
+
+# build output
+/server/
+/server.d.ts
+/server.d.ts.map
+/server.js
+/server.js.map
