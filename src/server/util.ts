@@ -9,15 +9,20 @@ import {
   handleTrigger,
   ReadDocData,
   ReadDocSnapshot,
+  ReadField,
   Schema,
   WriteDoc,
   WriteDocData,
 } from 'kira-nosql';
 
-import { FirebaseTriggerDict, FirestoreReadDocData, FirestoreWriteDocData } from './type';
+import {
+  FirebaseTriggerDict,
+  FirestoreReadDocData,
+  FirestoreWriteDocData,
+  FirestoreWriteField,
+} from './type';
 
 function firestoreToSnapshot(docSnapshot: QueryDocumentSnapshot): ReadDocSnapshot {
-  console.log('firestoreToSnapshot', docSnapshot.data());
   return {
     id: docSnapshot.id,
     data: firestoreToReadDocData(docSnapshot.data()),
@@ -26,7 +31,7 @@ function firestoreToSnapshot(docSnapshot: QueryDocumentSnapshot): ReadDocSnapsho
 
 function firestoreToReadDocData(data: FirestoreReadDocData | undefined): ReadDocData {
   return Object.fromEntries(
-    Object.entries(data ?? {}).map(([fieldName, field]) => {
+    Object.entries(data ?? {}).map<readonly [string, ReadField]>(([fieldName, field]) => {
       if (typeof field === 'string') {
         return [fieldName, { type: 'string', value: field }];
       }
@@ -34,17 +39,19 @@ function firestoreToReadDocData(data: FirestoreReadDocData | undefined): ReadDoc
         return [fieldName, { type: 'number', value: field }];
       }
       if (field instanceof firestore.Timestamp) {
-        return [fieldName, { type: 'date', value: field }];
+        return [fieldName, { type: 'date', value: field.toDate() }];
       }
-      return [fieldName, { id: field.id, ...firestoreToReadDocData(field) }];
+      return [
+        fieldName,
+        { type: 'ref', value: { id: field.id, data: firestoreToReadDocData(field) } },
+      ];
     })
   );
 }
 
 function writeToFirestoreDocData(data: WriteDocData): FirestoreWriteDocData {
-  console.log('write', data);
   return Object.fromEntries(
-    Object.entries(data).map(([fieldName, field]) => {
+    Object.entries(data).map<readonly [string, FirestoreWriteField]>(([fieldName, field]) => {
       if (field.type === 'number' || field.type === 'string' || field.type === 'date') {
         return [fieldName, field.value];
       }
@@ -85,7 +92,6 @@ export function getTriggers<S extends Schema>(
     if (docSnapshot.tag === 'left') {
       return docSnapshot;
     }
-    console.log('getdoc', docSnapshot.value);
     return { tag: 'right', value: { id, data: firestoreToReadDocData(docSnapshot.value) } };
   };
 
