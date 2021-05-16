@@ -1,6 +1,6 @@
 import { Schema_1, Schema_2, schemaToActions_1, schemaToActions_2 } from 'kira-nosql';
 
-import { GetTriggers } from './types';
+import { GetTriggers } from './type';
 import { getTriggers } from './util';
 
 export const getTriggers_1: GetTriggers<Schema_1> = ({ firestore, schema }) => {

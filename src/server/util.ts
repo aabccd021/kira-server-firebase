@@ -3,7 +3,7 @@ import { region } from 'firebase-functions';
 import { Actions, handleTrigger, InDocData, Schema } from 'kira-nosql';
 import { isUndefined } from 'lodash';
 
-import { FirebaseTriggerDict, FirestoreDocData, TriggerContext } from './types';
+import { FirebaseTriggerDict, FirestoreDocData, TriggerContext } from './type';
 
 function firestoreToInDocData(data: FirestoreDocData): InDocData {
   return Object.fromEntries(
